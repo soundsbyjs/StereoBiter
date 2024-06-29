@@ -20,19 +20,31 @@ StereoBiterAudioProcessorEditor::StereoBiterAudioProcessorEditor (StereoBiterAud
 
     addAndMakeVisible (clearButton);
     clearButton.setButtonText ("Clear");
-        // clearButton.onClick = [this] { clearButtonClicked(); };
+    clearButton.onClick = [this] { clearButtonClicked(); };
 
-    setSize (300, 200);
+	addAndMakeVisible(midSlider);
+	midSlider.setRange(-100, 0, .1);
+	midSlider.setTextValueSuffix("this doesnt do anything rn");
+	midSlider.addListener(this);
 
     formatManager.registerBasicFormats();
 	
     setSize (400, 300);
 }
 
+void StereoBiterAudioProcessorEditor::sliderValueChanged(juce::Slider* slider)
+{
+	audioProcessor.midStrength = slider->getValue();	
+}
+
 StereoBiterAudioProcessorEditor::~StereoBiterAudioProcessorEditor()
 {
 }
 
+void StereoBiterAudioProcessorEditor::clearButtonClicked()
+{
+	audioProcessor.ratio = 1.0f;
+}
 // ill come back to u
 // void AudioProcessor::setProcessingPrecision 	( 	ProcessingPrecision 	newPrecision	)
 //
@@ -44,13 +56,14 @@ void StereoBiterAudioProcessorEditor::paint (juce::Graphics& g)
 
     g.setColour (juce::Colours::white);
     g.setFont (15.0f);
-    g.drawFittedText ("Hello World!", getLocalBounds(), juce::Justification::centred, 1);
 }
 
 void StereoBiterAudioProcessorEditor::resized()
 {
 	openButton .setBounds (10, 10, getWidth() - 20, 20);
     clearButton.setBounds (10, 40, getWidth() - 20, 20);
+	const int border = 120;
+	midSlider.setBounds(border, 100, getWidth() - border, 20);
 
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..

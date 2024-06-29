@@ -9,3 +9,5 @@ TODO:
 Make the mids slider
 Make a better open button
 Build for Windows and Mac and distribute
+
+Shoutouts to Mr. Bill for the idea, he's sick af :)
