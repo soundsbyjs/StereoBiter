@@ -206,7 +206,6 @@ float StereoBiterAudioProcessor::getAverage(juce::Array<float>& arr)
 
 void StereoBiterAudioProcessor::getStereoFieldRatio(juce::AudioSampleBuffer& sample)
 {
-	
 	float totalMidEnergy = 0; 
 	float totalSideEnergy = 0;
 	juce::Array<float> ratios;
