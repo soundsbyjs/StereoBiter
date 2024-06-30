@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <JuceHeader.h>
+#include "../lib/JuceLibraryCode/JuceHeader.h"
 
 //==============================================================================
 /**

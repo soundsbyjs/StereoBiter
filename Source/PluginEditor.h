@@ -8,8 +8,9 @@
 
 #pragma once
 
-#include <JuceHeader.h>
+#include "../lib/JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
+#include "./../lib/dRowAudio/gui/dRowAudio_AudioFileDropTarget.h"
 
 //==============================================================================
 /**
@@ -43,6 +44,8 @@ private:
     StereoBiterAudioProcessor& audioProcessor;
 
 	void sliderValueChanged(juce::Slider* slider) override;
+	AudioFileDropTarget fileDrop;
+	juce::FileDragAndDropTarget<D-`>
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (StereoBiterAudioProcessorEditor)
 
