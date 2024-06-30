@@ -213,8 +213,12 @@ void StereoBiterAudioProcessor::getStereoFieldRatio(juce::AudioSampleBuffer& sam
 	{
 		float mid = (sample.getSample(0, i) + (sample.getSample(1, i))) / sqrt(2);
 		float side = (sample.getSample(0, i) - (sample.getSample(1, i))) / sqrt(2);
+		/*
 		totalMidEnergy += pow(fabs(mid), 2);
 		totalSideEnergy += pow(fabs(side), 2);
+		*/
+		totalMidEnergy += fabs(mid);
+		totalSideEnergy += fabs(side);
 	}
 	ratio = (totalSideEnergy/sample.getNumSamples()) / (totalMidEnergy/sample.getNumSamples());
 	std::cout << " st field ratio: " << ratio << std::flush;
