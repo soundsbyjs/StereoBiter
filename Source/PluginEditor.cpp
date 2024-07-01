@@ -13,23 +13,32 @@
 StereoBiterAudioProcessorEditor::StereoBiterAudioProcessorEditor (StereoBiterAudioProcessor& p)
     : AudioProcessorEditor (&p), audioProcessor (p)
 {
-	
-	addAndMakeVisible (openButton);
-    openButton.setButtonText ("Open...");
-    openButton.onClick = [this] { openButtonClicked(); };
-
-    addAndMakeVisible (clearButton);
-    clearButton.setButtonText ("Clear");
-    clearButton.onClick = [this] { clearButtonClicked(); };
-
-	addAndMakeVisible(midSlider);
-	midSlider.setRange(-100, 0, .1);
-	midSlider.setTextValueSuffix("this doesnt do anything rn");
-	midSlider.addListener(this);
-
     formatManager.registerBasicFormats();
+	fd.getPointers(&fileBuffer, &formatManager);
+	addAndMakeVisible(fd);
+
+	fd.setSize(400, 300);
+	fd.setTitle("Drop a sample in here.");
+
+
+	// fd.getFilePointer(&fileBuffer);
+	// addAndMakeVisible (openButton);
+    // openButton.setButtonText ("Open...");
+    // openButton.onClick = [this] { openButtonClicked(); };
+
+    // addAndMakeVisible (clearButton);
+    // clearButton.setButtonText ("Clear");
+    // clearButton.onClick = [this] { clearButtonClicked(); };
+
+	// addAndMakeVisible(midSlider);
+	// midSlider.setRange(-100, 0, .1);
+	// midSlider.setTextValueSuffix("this doesnt do anything rn");
+	// midSlider.addListener(this);
+
+	// addAndMakeVisible(fileDropper);
+
 	
-    setSize (400, 300);
+    setSize(400, 300);
 }
 
 void StereoBiterAudioProcessorEditor::sliderValueChanged(juce::Slider* slider)
@@ -53,6 +62,7 @@ void StereoBiterAudioProcessorEditor::paint (juce::Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
     g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
+	//g.fill
 
     g.setColour (juce::Colours::white);
     g.setFont (15.0f);

@@ -11,6 +11,7 @@
 #include "../lib/JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
 #include "./../lib/dRowAudio/dRowAudio.h"
+#include "fileDropper.h"
 
 //==============================================================================
 /**
@@ -44,9 +45,9 @@ private:
     StereoBiterAudioProcessor& audioProcessor;
 
 	void sliderValueChanged(juce::Slider* slider) override;
-	// dRowAudio::AudioFileDropTarget fileDrop;
-	drow::AudioFileDropTarget fileDropper;
-	// juce::FileDragAndDropTarget<D-`>
+	// drow::AudioFileDropTarget fileDropper;
+
+	FileDropper fd;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (StereoBiterAudioProcessorEditor)
 
