@@ -7,10 +7,14 @@ public:
 	juce::GlowEffect g;
 	juce::AudioSampleBuffer* sample;
 	juce::AudioFormatManager* formatManager;
+	double* ratio;
+	juce::Image catgirl;
 
 	FileDropper()
     {
         setSize(400, 300); // Optionally set a size for your component
+		juce::File catgirlFile("../img/catgirl.png");
+		catgirl = juce::ImageFileFormat::loadFrom(catgirlFile);
     }
 	~FileDropper()
 	{
@@ -18,12 +22,14 @@ public:
 		// the cousin that stole the laptop:
 	}
 
-	void getPointers(juce::AudioSampleBuffer* sample, juce::AudioFormatManager* formatManager)
+	void getPointers(juce::AudioSampleBuffer* sample, juce::AudioFormatManager* formatManager, double* ratio)
 	{
 		// pointer to a pointer points to a pointer, lol
 		this->sample = sample;
 		this->formatManager = formatManager;
+		this->ratio = ratio;
 	}
+
     bool isInterestedInFileDrag(const juce::StringArray& files) override 
 	{ 
 		return true; 
@@ -51,7 +57,6 @@ public:
 		isDraggingOver = false;
 		toSampleBuffer(files);
 		repaint();
-
 	}
 	
 	int position;
@@ -79,6 +84,28 @@ public:
                           true);
             position = 0;
         }
+		std::cout<<sample->getNumSamples()<<std::flush;
+		getStereoFieldRatio(*sample);
+	}
+
+	void getStereoFieldRatio(juce::AudioSampleBuffer& sample)
+	{
+		float totalMidEnergy = 0; 
+		float totalSideEnergy = 0;
+		juce::Array<float> ratios;
+		for(int i = 0; i < sample.getNumSamples(); i++)
+		{
+			float mid = (sample.getSample(0, i) + (sample.getSample(1, i))) / sqrt(2);
+			float side = (sample.getSample(0, i) - (sample.getSample(1, i))) / sqrt(2);
+			/*
+			totalMidEnergy += pow(fabs(mid), 2);
+			totalSideEnergy += pow(fabs(side), 2);
+			*/
+			totalMidEnergy += pow(mid, 2);
+			totalSideEnergy += pow(side, 2);
+		}
+		*ratio = (totalSideEnergy/sample.getNumSamples()) / (totalMidEnergy/sample.getNumSamples());
+		std::cout << " st field ratio: " << *ratio << std::flush;
 	}
 
 	void paint(juce::Graphics& g) override
@@ -89,11 +116,17 @@ public:
 		}
 		else
 		{
-			g.fillAll(juce::Colours::lightgrey); // Default background color
+			g.fillAll(juce::Colours::black); // Default background color
 		}
+		if (catgirl.isValid())
+        {
+			std::cout << "image is valid" << std::flush;
+            g.drawImageWithin(catgirl, 10, 10, getWidth() - 20, getHeight() - 20, juce::RectanglePlacement::centred);
+        }
 
-        g.setColour(juce::Colours::black);
+        g.setColour(juce::Colours::white);
         g.setFont(20.0f);
-        g.drawFittedText("Drag and drop files here", getLocalBounds(), juce::Justification::centred, 1);
+        g.drawFittedText("Drag and drop files here :3", getLocalBounds(), juce::Justification::centred, 1);
+
 	}
 };

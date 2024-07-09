@@ -14,7 +14,7 @@ StereoBiterAudioProcessorEditor::StereoBiterAudioProcessorEditor (StereoBiterAud
     : AudioProcessorEditor (&p), audioProcessor (p)
 {
     formatManager.registerBasicFormats();
-	fd.getPointers(&fileBuffer, &formatManager);
+	fd.getPointers(&fileBuffer, &formatManager, &audioProcessor.ratio);
 	addAndMakeVisible(fd);
 
 	fd.setSize(400, 300);
