@@ -53,6 +53,16 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 	void getStereoFieldRatio(juce::AudioBuffer<float> sidechain);
+
+	void getAverageBufferHistory();
+	void filoLookback(juce::AudioBuffer<float>* sidechainBuffer);
+
+	//holds the number of buffers we keep in our history
+	int bufferLookback = 5;
+
+	// this is a stack
+	juce::Array<float> bufferFilo;
+
 	float stFieldRatio;
 
 
@@ -60,3 +70,30 @@ private:
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (StereoBiterV2AudioProcessor)
 };
+
+class BufferFilo
+{
+	juce::Array<float> filo[2];
+	int numBuffers;
+	int bufSize;
+	int lastBuffer;
+	void filoLookback(juce::AudioBuffer<float>* sidechainBuffer)
+	{
+		int size = filo[0].size();
+		if(size < (numBuffers - bufSize))
+		{
+			for(int i = 0; i < sidechainBuffer->getNumSamples(); i++)
+			{
+				for(int j = 0; j <= 1; j++)
+				{
+					filo[j].add(sidechainBuffer->getSample(j, i));
+				}
+			}
+		}
+		for(int i = 0; i < bufSize * numBuffers; i += bufSize)
+		{
+			for(int i = bufSize * lastBuffer; )	
+		}
+	}
+};
+

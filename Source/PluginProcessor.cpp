@@ -90,8 +90,6 @@ void StereoBiterV2AudioProcessor::changeProgramName (int index, const juce::Stri
 //==============================================================================
 void StereoBiterV2AudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    // Use this method as the place to do any pre-playback
-    // initialisation that you need..
 }
 
 void StereoBiterV2AudioProcessor::releaseResources()
@@ -164,6 +162,20 @@ void StereoBiterV2AudioProcessor::getStereoFieldRatio(juce::AudioBuffer<float> s
 	}
 	stFieldRatio = (totalSideEnergy/sidechain.getNumSamples()) / (totalMidEnergy/sidechain.getNumSamples());
 }
+
+void StereoBiterV2AudioProcessor::getAverageBufferHistory()
+{
+	
+}
+
+void StereoBiterV2AudioProcessor::filoLookback(juce::AudioBuffer<float>* sidechainBuffer)
+{
+	int finalIndex = ;
+	for(int i = 0; i < sidechainBuffer->getNumSamples(); i++)
+	{
+	}
+}
+
 //==============================================================================
 bool StereoBiterV2AudioProcessor::hasEditor() const
 {
@@ -195,3 +207,5 @@ juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new StereoBiterV2AudioProcessor();
 }
+
+
