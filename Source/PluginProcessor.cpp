@@ -114,34 +114,32 @@ void StereoBiterV2AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer
 
 	auto mainInputOutput = getBusBuffer (buffer, true, 0);                                  // [5]
 	auto sideChainInput  = getBusBuffer (buffer, true, 1);
-	
-	getStereoFieldRatio(sideChainInput);
 
 	juce::ScopedNoDenormals noDenormals;
 	
 	int numSamples = buffer.getNumSamples();
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
-
-	// If there are more output channels than input channels, clear the extra channels
+    // If there are more output channels than input channels, clear the extra channels
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
     {
         buffer.clear(i, 0, numSamples);
     }
+    getStereoFieldRatio(sideChainInput);
+    float left, right, mid;
+    for (int s = 0; s < numSamples; ++s)
+    {
+            left = buffer.getSample(0, s);
+            right = buffer.getSample(1, s);
+            float mid = (left + right) / sqrt(2);
+            float side = (left - right) / sqrt(2);
+            side *= stFieldRatio;
+            left = (mid + side) / sqrt(2);
+            right = (mid - side) / sqrt(2);
+            buffer.setSample(0, s, left);
+            buffer.setSample(1, s, right);
+    }
 
-	float left, right, mid;
-	for(int s = 0; s < numSamples; ++s)
-	{
-		left = buffer.getSample(0,s);
-		right = buffer.getSample(1,s);
-		float mid = (left + right) / sqrt(2);
-		float side = (left - right) / sqrt(2);
-		side *= stFieldRatio;
-		left = (mid + side)/sqrt(2);
-		right = (mid - side)/sqrt(2);
-		buffer.setSample(0,s,left);
-		buffer.setSample(1,s,right);
-	}
 	for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {	 
 		auto* channelData = buffer.getWritePointer (channel);
