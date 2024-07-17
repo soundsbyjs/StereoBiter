@@ -8,17 +8,17 @@
 
 #pragma once
 
-#include "../lib/JuceLibraryCode/JuceHeader.h"
+#include <JuceHeader.h>
 
 //==============================================================================
 /**
 */
-class StereoBiterAudioProcessor  : public juce::AudioProcessor
+class StereoBiterV2AudioProcessor  : public juce::AudioProcessor
 {
 public:
     //==============================================================================
-    StereoBiterAudioProcessor();
-    ~StereoBiterAudioProcessor() override;
+    StereoBiterV2AudioProcessor();
+    ~StereoBiterV2AudioProcessor() override;
 
     //==============================================================================
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
@@ -48,21 +48,15 @@ public:
     void setCurrentProgram (int index) override;
     const juce::String getProgramName (int index) override;
     void changeProgramName (int index, const juce::String& newName) override;
-	
 
     //==============================================================================
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
+	void getStereoFieldRatio(juce::AudioBuffer<float> sidechain);
+	float stFieldRatio;
 
-	void getStereoFieldRatio(juce::AudioSampleBuffer& sample);
-	float getAverage(juce::Array<float>& arr);
-	double ratio = 0;
-	bool calculatedRatio = true;
-	juce::AudioSampleBuffer sample;
-
-	float midStrength;
 
 private:
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (StereoBiterAudioProcessor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (StereoBiterV2AudioProcessor)
 };
