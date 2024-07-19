@@ -47,6 +47,7 @@ public:
 			avgs[NumAverages - 1].numSamples = buf.getNumSamples();
 			++NumAverages;
 			average = avgs[NumAverages - 1].value;
+			std::cout<<"buffer is empty, adding " << average << " to the buffer. NumAverages is " << NumAverages << std::endl;
 			isEmpty = false;
 		}
 		else
@@ -56,6 +57,8 @@ public:
 			{
 				avgs[NumAverages - 1].value = getAverage(&buf);
 				avgs[NumAverages - 1].numSamples = buf.getNumSamples();
+
+				std::cout<<"Buffer is not full. adding " << avgs[NumAverages - 1].value << " to the buffer. NumAverages is " << NumAverages << std::endl;
 				AverageTotal = 0;
 				totalNumSamples = 0;
 				
@@ -65,6 +68,7 @@ public:
 					AverageTotal += avgs[i].value * avgs[i].numSamples;
 					totalNumSamples += avgs[i].numSamples;
 				}
+				std::cout<<"Average is " << average << std::endl << std::endl;
 
 				if(totalNumSamples != 0 || AverageTotal != 0)
 					average = AverageTotal / totalNumSamples;
@@ -76,6 +80,8 @@ public:
 			{
 				avgs[NumAverages - 1].value = getAverage(&buf);
 				avgs[NumAverages - 1].numSamples = buf.getNumSamples();
+
+				std::cout<<"Buffer is now full. adding " << avgs[NumAverages - 1].value << " to the buffer. NumAverages is " << NumAverages << std::endl;
 
 				AverageTotal = 0;
 				totalNumSamples = 0;

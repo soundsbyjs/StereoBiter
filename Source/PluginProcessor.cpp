@@ -110,11 +110,22 @@ bool StereoBiterV2AudioProcessor::isBusesLayoutSupported(const BusesLayout& layo
 
 void StereoBiterV2AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
+	juce::Random random;
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
 
-	auto mainInputOutput = getBusBuffer (buffer, true, 0);                                  // [5]
-	auto sideChainInput  = getBusBuffer (buffer, true, 1);
+	auto mainInputOutput = getBusBuffer (buffer, true, 0);
+	// auto sideChainInput  = getBusBuffer (buffer, true, 1);
+	auto sideChainInput = juce::AudioBuffer<float>(2, buffer.getNumSamples());
+
+		
+    for (auto sample = 0; sample < sideChainInput.getNumSamples(); ++sample)
+	{
+		float left = random.nextFloat() * 0.25f - 0.125f;
+		float right = -1 * left - .001f;
+        sideChainInput.setSample(0, sample, left);
+		sideChainInput.setSample(1, sample, right);
+	}	
 
 	// this checks if the sidechain input is active
 	// should only do anything if the input is stereo
