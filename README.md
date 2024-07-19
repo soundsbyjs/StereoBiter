@@ -4,6 +4,8 @@ is a tool that lets you match the percieved stereo width of a sample to an audio
 
 Thank you to Mr. Bill for the idea :) <3
 
+StereoBiter is free to compile, and paid binaries are available on my website.
+
 
 
 ## Spoiler Alert 🚨
