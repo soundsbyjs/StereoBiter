@@ -1,0 +1,13 @@
+ok let's walk through our circular buffer!
+
+program starts, buffer initalizes to 
+buf[100] { ; } // empty set
+
+insert one buffer average
+
+writeindex = 1
+
+second buffer, write to index 1
+average the averages, index + 1 = 2
+
+

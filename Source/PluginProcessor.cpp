@@ -90,6 +90,7 @@ void StereoBiterV2AudioProcessor::changeProgramName (int index, const juce::Stri
 //==============================================================================
 void StereoBiterV2AudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
+	this->bufSize = samplesPerBlock;
 }
 
 void StereoBiterV2AudioProcessor::releaseResources()
@@ -109,71 +110,52 @@ bool StereoBiterV2AudioProcessor::isBusesLayoutSupported(const BusesLayout& layo
 
 void StereoBiterV2AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
+    auto totalNumInputChannels  = getTotalNumInputChannels();
+    auto totalNumOutputChannels = getTotalNumOutputChannels();
 
 	auto mainInputOutput = getBusBuffer (buffer, true, 0);                                  // [5]
 	auto sideChainInput  = getBusBuffer (buffer, true, 1);
 
-	juce::ScopedNoDenormals noDenormals;
-	
-	int numSamples = buffer.getNumSamples();
-    auto totalNumInputChannels  = getTotalNumInputChannels();
-    auto totalNumOutputChannels = getTotalNumOutputChannels();
-    // If there are more output channels than input channels, clear the extra channels
-    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-    {
-        buffer.clear(i, 0, numSamples);
-    }
-    getStereoFieldRatio(sideChainInput);
-    float left, right, mid;
-    for (int s = 0; s < numSamples; ++s)
-    {
-            left = buffer.getSample(0, s);
-            right = buffer.getSample(1, s);
-            float mid = (left + right) / sqrt(2);
-            float side = (left - right) / sqrt(2);
-            side *= stFieldRatio;
-            left = (mid + side) / sqrt(2);
-            right = (mid - side) / sqrt(2);
-            buffer.setSample(0, s, left);
-            buffer.setSample(1, s, right);
-    }
+	// this checks if the sidechain input is active
+	// should only do anything if the input is stereo
+	if(sideChainInput.getNumChannels() == 2)	
+	{
+		cb.circularAverage(sideChainInput);
+		float left, right, mid;
+		for (int s = 0; s < buffer.getNumSamples(); ++s)
+		{
+			left = buffer.getSample(0, s);
+			right = buffer.getSample(1, s);
+			float mid = (left + right) / sqrt(2);
+			float side = (left - right) / sqrt(2);
+			side *= cb.average;
+			left = (mid + side) / sqrt(2);
+			right = (mid - side) / sqrt(2);
+			buffer.setSample(0, s, left);
+			buffer.setSample(1, s, right);
+		}
+	}
+	else
+	{
+		for (int s = 0; s < buffer.getNumSamples(); ++s)
+		{
+			//                                          HA
+			for(int c = 0; c < buffer.getNumChannels(); c++)
+			{
+				buffer.setSample(c, s, mainInputOutput.getSample(0, s));
+			}
+		}
+	}
 
-	for (int channel = 0; channel < totalNumInputChannels; ++channel)
+	for(int channel = 0; channel < totalNumInputChannels; ++channel)
     {	 
 		auto* channelData = buffer.getWritePointer (channel);
     }
-
-}
-
-// ok so now this has to run every audio buffer
-void StereoBiterV2AudioProcessor::getStereoFieldRatio(juce::AudioBuffer<float> sidechain)
-{
-	float totalMidEnergy = 0;
-	float totalSideEnergy = 0;
-	float left, right;
-	for(float s = 0; s < sidechain.getNumSamples(); s++)
-	{
-		left = sidechain.getSample(0,s);
-		right = sidechain.getSample(1,s);
-		float mid = (left + right) / sqrt(2);
-		float side = (left - right) / sqrt(2);
-		totalMidEnergy += pow(fabs(mid), 2);
-		totalSideEnergy += pow(fabs(side), 2);
-	}
-	stFieldRatio = (totalSideEnergy/sidechain.getNumSamples()) / (totalMidEnergy/sidechain.getNumSamples());
 }
 
 void StereoBiterV2AudioProcessor::getAverageBufferHistory()
 {
 	
-}
-
-void StereoBiterV2AudioProcessor::filoLookback(juce::AudioBuffer<float>* sidechainBuffer)
-{
-	int finalIndex = ;
-	for(int i = 0; i < sidechainBuffer->getNumSamples(); i++)
-	{
-	}
 }
 
 //==============================================================================
@@ -208,4 +190,7 @@ juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
     return new StereoBiterV2AudioProcessor();
 }
 
-
+bool StereoBiterV2AudioProcessor::sidechainActive()
+{
+	return true;
+}

@@ -27,12 +27,12 @@ void StereoBiterV2AudioProcessorEditor::paint (juce::Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
     g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
-    g.drawImage(catgirl, 0, 0, 300, 300, 0,0, 1024, 1024, false );
+    g.drawImage(catgirl, 0, 0, getWidth(), getHeight(), 0,0, catgirl.getWidth(), catgirl.getHeight(), false );
     g.setColour (juce::Colours::white);
 }
 
 void StereoBiterV2AudioProcessorEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
-    // subcomponents in your editor..
+    // subcomponents in your editor..Considering what I have seen his CPU usage at in ableton projects, I'm sure he has a battery backup for his investment.
 }

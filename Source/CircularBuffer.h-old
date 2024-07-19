@@ -1,0 +1,107 @@
+#pragma once
+#include <JuceHeader.h>
+
+// we do a lil computer science
+// ok, I need a circular buffer so that I can keep a running average
+// this way we won't end up with really clicky shit going on
+
+// number of blocks in the circular buffer
+#define NumBlocks 50
+#define SENTINEL -10000 // dont send a signal in that's wider than this! lol
+
+class StereoBiterV2CircularBuffer
+{
+public:
+	class Averages
+	{
+	  public:
+		float value;
+		int numSamples;
+	};
+
+	Averages avgs[NumBlocks];
+		
+	int NumAverages = 1; 
+	float average;
+	int averagesize;
+	bool full = false;
+	bool isEmpty = true;
+	// additional average to be averaged into the average, lol
+	// rolling average on a circular buffer! this is good computer science and dsp!!!!!!!!
+	
+	StereoBiterV2CircularBuffer()
+	{
+		for(int i = 0; i < NumBlocks; i++)
+		{
+			avgs[i].value = SENTINEL;
+		}
+	}
+	void circularAverage(juce::AudioBuffer<float> buf)
+	{
+		// 2 cases	
+		// buffer is empty, first frame
+		// buffer has stuff
+		// the buffer is not empty
+		// this algorithm should cover all the other cases
+
+		if(!isEmpty)
+		{
+			// if theres not a value there 
+			if(avgs[NumAverages - 1].value == SENTINEL)
+			{
+				// write to it
+				avgs[NumAverages - 1].value = getAverage(buf);
+				avgs[NumAverages - 1].numSamples = buf.getNumSamples();
+
+				// deaverage it
+				// if this is the second frame, write index is 2, now this will not divide by zero!
+				average = average * (avgs[NumAverages].numSamples * (NumAverages));
+				average = (average + avgs[NumAverages - 1].value) / (avgs[NumAverages - 1].numSamples * NumAverages);
+
+				if(NumAverages == NumBlocks)
+					NumAverages = 1;
+				else
+					++NumAverages;
+			}
+			else
+			{
+				// de-average that spot first
+				average = ((average * bufSize * (NumBlocks - 1)) - (avgs[NumAverages - 1].value * avgs[NumAverages - 1].numSamples));
+				avgs[NumAverages - 1].value = getAverage(buf);
+				avgs[NumAverages - 1].numSamples = buf.getNumSamples();
+				// average in the new buffer
+				average = ((average + avgs[NumAverages - 1].value) / (NumBlocks * avgs[NumAverages - 1].numSamples));
+
+				if(NumAverages == NumBlocks)
+					NumAverages = 1;
+				else
+					++NumAverages;
+			}
+		}
+		else
+		{
+			avgs[0].value = getAverage(buf);
+			avgs[0].numSamples = buf.getNumSamples();
+			average = avgs[0].value;
+			isEmpty = false;
+			++NumAverages;
+		}
+	}
+	float getAverage(juce::AudioBuffer<float> buf)
+	{
+		float totalMidEnergy = 0;
+		float totalSideEnergy = 0;
+		float left, right;
+		for(float s = 0; s < buf.getNumSamples(); s++)
+		{
+			left = buf.getSample(0,s);
+			right = buf.getSample(1,s);
+			float mid = (left + right) / sqrt(2);
+			float side = (left - right) / sqrt(2);
+			totalMidEnergy += pow(fabs(mid), 2);
+			totalSideEnergy += pow(fabs(side), 2);
+		}
+		// calling getNumSamples again is inefficient, but i dont care!
+		return (totalSideEnergy/buf.getNumSamples()) / (totalMidEnergy/buf.getNumSamples());
+	}
+};

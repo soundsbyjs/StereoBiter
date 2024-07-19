@@ -8,8 +8,9 @@
 
 #pragma once
 
-#include "../JuceLibraryCode/JuceHeader.h"
+#include <JuceHeader.h>
 #include "PluginProcessor.h"
+#include "juce_gui_basics/juce_gui_basics.h"
 
 //==============================================================================
 /**
@@ -28,7 +29,10 @@ private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     StereoBiterV2AudioProcessor& audioProcessor;
-    juce::Image catgirl = juce::ImageCache::getFromMemory(BinaryData::catgirl_png, BinaryData::catgirl_pngSize);
+
+	juce::Image catgirl = juce::ImageCache::getFromMemory (BinaryData::catgirl_png, BinaryData::catgirl_pngSize);
+
+    // juce::Image catgirl = juce::ImageCache::getFromFile(juce::File("../catgirl.png"));
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (StereoBiterV2AudioProcessorEditor)
 };
