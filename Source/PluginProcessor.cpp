@@ -142,24 +142,22 @@ void StereoBiterV2AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer
 	// this way it doesnt keep updating the average when there's no sample
 	else
 	{
-		for (int s = 0; s < buffer.getNumSamples(); ++s)
+		for(int c = 0; c < buffer.getNumChannels(); c++)
 		{
-			for(int c = 0; c < buffer.getNumChannels(); c++)
+			// cb.circularAverage(sideChainInput);
+			float left, right, mid;
+			for (int s = 0; s < buffer.getNumSamples(); ++s)
 			{
-				// cb.circularAverage(sideChainInput);
-				float left, right, mid;
-				for (int s = 0; s < buffer.getNumSamples(); ++s)
-				{
-					left = buffer.getSample(0, s);
-					right = buffer.getSample(1, s);
-					float mid = (left + right) / sqrt(2);
-					float side = (left - right) / sqrt(2);
-					side *= cb.average;
-					left = (mid + side) / sqrt(2);
-					right = (mid - side) / sqrt(2);
-					buffer.setSample(0, s, left);
-					buffer.setSample(1, s, right);
-				}
+				left = buffer.getSample(0, s);
+				right = buffer.getSample(1, s);
+				float mid = (left + right) / sqrt(2);
+				float side = (left - right) / sqrt(2);
+				side *= cb.average;
+				left = (mid + side) / sqrt(2);
+				right = (mid - side) / sqrt(2);
+				buffer.setSample(0, s, left);
+				buffer.setSample(1, s, right);
+			}
 		}
 	}
 
@@ -171,17 +169,8 @@ void StereoBiterV2AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer
 
 bool StereoBiterV2AudioProcessor::isSidechainActive(juce::AudioBuffer<float> *sideChainInput)
 {
-	if(sideChainInput->getNumChannels() != 2)
-		return false;
-
-	for(int i = 0; i < sideChainInput->getNumSamples(); i++)
-	{
-		for(int c = 0; c < 2; c++)
-		{
-			if(sideChainInput->getSample(c, i) != 0.0f)
-				return true;
-		}
-	}
+	if(sideChainInput != nullptr) return true;
+	return false;
 }
 void StereoBiterV2AudioProcessor::getAverageBufferHistory()
 {
