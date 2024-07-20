@@ -55,6 +55,7 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 	void getStereoFieldRatio(juce::AudioBuffer<float> sidechain);
 
+	bool isSidechainActive(juce::AudioBuffer<float> *sideChainInput);
 	void getAverageBufferHistory();
 
 	bool sidechainActive();

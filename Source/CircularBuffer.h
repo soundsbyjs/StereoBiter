@@ -1,13 +1,9 @@
 #pragma once
 #include <JuceHeader.h>
+#include <limits>
 
-// we do a lil computer science
-// ok, I need a circular buffer so that I can keep a running average
-// this way we won't end up with really clicky shit going on
-
-// number of blocks in the circular buffer
-#define NumBlocks 50
-#define SENTINEL -10000 // dont send a signal in that's wider than this! lol
+// good call
+#define SENTINEL std::numeric_limits<float>::quiet_NaN()
 
 class StereoBiterV2CircularBuffer
 {
@@ -20,7 +16,11 @@ public:
 		int numSamples;
 	};
 
-	Averages avgs[NumBlocks];
+	const static int MAXBUFFERSIZE = 500;
+
+	int NumBlocks;
+	//Averages &avgs[];
+	Averages avgs[MAXBUFFERSIZE];
 		
 	int NumAverages; 
 	float average = 1;
@@ -33,13 +33,36 @@ public:
 	
 	StereoBiterV2CircularBuffer()
 	{
-		for(int i = 0; i < NumBlocks; i++)
-		{
-			avgs[i].value = SENTINEL;
-		}
 		NumAverages = 1;
+		NumBlocks = 50;
+		clear();
 	}
-	void circularAverage(juce::AudioBuffer<float> buf)
+
+	~StereoBiterV2CircularBuffer()
+	{
+			
+	}
+	/**
+ 	* @brief clear the buffer and change its size
+ 	*/
+	void clear(int newNumAverages)
+	{
+		for(auto i : avgs)
+			i.value = SENTINEL;
+		NumAverages = newNumAverages;
+		isEmpty = true;
+	}
+	/**
+ 	* @brief clear the buffer but keep its size 
+ 	*/
+	void clear()
+	{
+		for(auto i : avgs)
+			i.value = SENTINEL;
+		isEmpty = true;
+	}
+
+	float circularAverage(juce::AudioBuffer<float> buf)
 	{
 		if(isEmpty)	
 		{
@@ -104,6 +127,7 @@ public:
 			else
 				++NumAverages;
 		}
+		return average;
 	}
 	float getAverage(juce::AudioBuffer<float>* buf)
 	{
