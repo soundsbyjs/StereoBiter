@@ -16,7 +16,8 @@
 /**
 */
 class StereoBiterV2AudioProcessorEditor  : public juce::AudioProcessorEditor,
-										   public juce::Slider::Listener
+										   public juce::Slider::Listener,
+										   public juce::Button::Listener
 {
 public:
     StereoBiterV2AudioProcessorEditor (StereoBiterV2AudioProcessor&);
@@ -26,6 +27,7 @@ public:
     void paint (juce::Graphics&) override;
     void resized() override;
 	void sliderValueChanged(juce::Slider* slider) override;
+	void buttonClicked(juce::Button* button) override;
 
 private:
     // This reference is provided as a quick way for your editor to
@@ -38,6 +40,7 @@ private:
     juce::Label  frequencyLabel;
     juce::Slider lookbackSlider;
     juce::Label  lookbackLabel;
+	juce::ToggleButton filterButton;
 
     // juce::Image catgirl = juce::ImageCache::getFromFile(juce::File("../catgirl.png"));
 

@@ -59,6 +59,9 @@ public:
 	void getAverageBufferHistory();
 
 	bool sidechainActive();
+	bool filterOn;
+	float cutoff = 120.0f;
+	juce::IIRFilter lpf;
 
 	//holds the number of buffers we keep in our history
 	int bufferLookback = 5;

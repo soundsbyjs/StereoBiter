@@ -45,11 +45,11 @@ public:
 	/**
  	* @brief clear the buffer and change its size
  	*/
-	void clear(int newNumAverages)
+	void clear(int NumBlocks)
 	{
 		for(auto i : avgs)
 			i.value = SENTINEL;
-		NumAverages = newNumAverages;
+		this->NumBlocks = NumBlocks;
 		isEmpty = true;
 	}
 	/**
