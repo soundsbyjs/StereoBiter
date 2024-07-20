@@ -19,12 +19,13 @@ StereoBiterV2AudioProcessorEditor::StereoBiterV2AudioProcessorEditor (StereoBite
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
     setSize (500, 500);
+
 	addAndMakeVisible(frequencySlider);
 	frequencySlider.setRange(0, NYQUIST);
 	frequencyLabel.setText("HPF Frequency", juce::dontSendNotification);
 
 	addAndMakeVisible(lookbackSlider);
-	lookbackSlider.setRange(1, audioProcessor.cb.MAXBUFFERSIZE);
+	lookbackSlider.setRange(1, audioProcessor.cb.MAXBUFFERSIZE, 1);
 	lookbackLabel.setText("Buffer Lookback", juce::dontSendNotification);
 
 	addAndMakeVisible(filterButton);
@@ -52,7 +53,7 @@ void StereoBiterV2AudioProcessorEditor::sliderValueChanged(juce::Slider* slider)
 	}
 	else if(slider == &lookbackSlider)
 	{
-		audioProcessor.cb.clear(lookbackSlider.getValue());
+		audioProcessor.cb.clear(round(lookbackSlider.getValue()));
 	}
 }
 //==============================================================================
